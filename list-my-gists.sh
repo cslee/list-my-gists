@@ -50,8 +50,8 @@ fi
 
 my_gists=$(echo "$my_gists" | sort -k 2 -f | sed 's/\[/\\[/g' | sed 's/\]/\\]/g')
 
-my_public_gists=$(echo "$my_gists" | grep -v ' (secret)$' | sed -E 's/^(.*\.github\.com\/)([0-9a-f]+) (.*) $/- [\3](\1\2)/')
-my_secret_gists=$(echo "$my_gists" | grep ' (secret)$' | sed -E 's/^(.*\.github\.com\/)([0-9a-f]+) (.*) \(secret\)$/- [\3](\1\2)/')
+my_public_gists=$(echo "$my_gists" | grep -v ' (secret)$' | sed -E 's/^(.*\.github\.com\/)([^ ]+) (.*) $/- [\3](\1\2)/')
+my_secret_gists=$(echo "$my_gists" | grep ' (secret)$' | sed -E 's/^(.*\.github\.com\/)([^ ]+) (.*) \(secret\)$/- [\3](\1\2)/')
 
 generate_output() {
     output=''
@@ -60,7 +60,7 @@ generate_output() {
         gist_option=''
         title='My gists'
         filename='my-gists.md'
-        hash=$(echo "$my_gists" | grep 'My gists *$' | sed -n 1p | sed -E 's/.*\.github\.com\/([0-9a-f]+) .*/\1/')
+        hash=$(echo "$my_gists" | grep 'My gists *$' | sed -n 1p | sed -E 's/.*\.github\.com\/([^ ]+) .*/\1/')
 
         [ ! -z "$my_public_gists" ] && output+=$'## My gists\n'"$my_public_gists"$'\n\n'
     elif [ "$1" == "secret-only" ]; then
@@ -68,7 +68,7 @@ generate_output() {
         gist_option='-p'
         title='My secret gists'
         filename='my-secret-gists.md'
-        hash=$(echo "$my_gists" | grep 'My secret gists (secret)$' | sed -n 1p | sed -E 's/.*\.github\.com\/([0-9a-f]+) .*/\1/')
+        hash=$(echo "$my_gists" | grep 'My secret gists (secret)$' | sed -n 1p | sed -E 's/.*\.github\.com\/([^ ]+) .*/\1/')
 
         [ ! -z "$my_secret_gists" ] && output+=$'## My secret gists\n'"$my_secret_gists"$'\n\n'
     else
@@ -76,7 +76,7 @@ generate_output() {
         gist_option='-p'
         title='My public & secret gists'
         filename='my-public-and-secret-gists.md'
-        hash=$(echo "$my_gists" | grep 'My public & secret gists (secret)$' | sed -n 1p | sed -E 's/.*\.github\.com\/([0-9a-f]+) .*/\1/')
+        hash=$(echo "$my_gists" | grep 'My public & secret gists (secret)$' | sed -n 1p | sed -E 's/.*\.github\.com\/([^ ]+) .*/\1/')
 
         [ ! -z "$my_public_gists" ] && output+=$'## My public gists\n'"$my_public_gists"$'\n\n'
         [ ! -z "$my_secret_gists" ] && output+=$'## My secret gists\n'"$my_secret_gists"$'\n\n'
